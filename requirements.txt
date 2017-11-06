@@ -3,3 +3,5 @@ Flask-Cors==3.0.3
 
 redis==2.10.6
 pip==9.0.1
+
+https://github.com/s4w3d0ff/python-poloniex/archive/v0.4.6.zip

@@ -1,3 +1,5 @@
-# PoloPy Cache Api
+# Poloniex API Caching Layer
+
+
 
 
