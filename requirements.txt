@@ -1,0 +1,5 @@
+Flask==0.12.2
+Flask-Cors==3.0.3
+
+redis==2.10.6
+pip==9.0.1
