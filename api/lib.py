@@ -1,4 +1,5 @@
 import datetime
+import math
 
 range_periods = {
     'LAST_HOUR': {
@@ -38,8 +39,8 @@ class TimeRange:
         time_range = range_periods[self.range]
 
         # convert to unix timestamp
-        start = self.utc_now.timestamp()
-        end = (self.utc_now - datetime.timedelta(seconds=time_range['seconds'])).timestamp()
+        start = math.floor((self.utc_now - datetime.timedelta(seconds=time_range['seconds'])).timestamp())
+        end = math.floor(self.utc_now.timestamp())
         period = time_range['period']
 
         return {
