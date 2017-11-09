@@ -2,27 +2,37 @@ import requests as r
 import time
 
 from api import app, cache, poloniex_url
-from flask import Flask, jsonify, request
+from flask import jsonify, request
+from api.lib import TimeRange, range_periods
 
 
 @app.route('/public', methods=['GET'])
 def index():
     command = request.args.get('command')
 
-    @cache.cached(timeout=5, key_prefix=command)
-    def get_ticker():
-        ticker = r.get(poloniex_url + '?command=' + command)
-        return jsonify(ticker.json())
-
     if command == 'returnTicker':
+        @cache.cached(timeout=5, key_prefix=command)
+        def get_ticker():
+            ticker = r.get(poloniex_url + '?command=' + command)
+            data = {'poloniex': ticker.json()}
+            return jsonify(data)
+
         return get_ticker()
 
-    #
-    # test_data = r.get(
-    #     poloniex_url + '?command=returnChartData&currencyPair=BTC_XMR&start=1405699200&end=1406700000&period=14400')
-    # print(test_data.json())
-    # return jsonify(test_data.json())
+    if command == 'returnChartData':
+        currencies_param = request.args.get('currencyPair')
+        range_param = request.args.get('range')
+        timeout = range_periods[range_param]['expires']
 
+        @cache.memoize(timeout=timeout)
+        def get_chart_data(currencies, time_range):
+            time_period = TimeRange(time_range=time_range)
+            url = poloniex_url + '?command=' + command + '&' + time_period.get_query_str + '&currencyPair=' + currencies
 
-    # keep the chartData stuff inside an object called poloniex
+            chart_data = r.get(url, timeout=120)
+            data = {'poloniex': chart_data.json()}
+            return jsonify(data)
+
+        return get_chart_data(currencies_param, range_param)
+
     return time.ctime()

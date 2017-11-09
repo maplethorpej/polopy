@@ -14,6 +14,7 @@ redis_cache = {
 cache = Cache(config=redis_cache)
 cache.init_app(app)
 
+# use this to clear the cache // remove in prod
 #with app.app_context():
 #    cache.clear()
 
