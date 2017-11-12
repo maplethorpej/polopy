@@ -1,5 +1,4 @@
 import requests as r
-import time
 
 from api import app, cache, poloniex_url
 from api.lib import TimeRange, range_periods
@@ -27,7 +26,7 @@ def index():
         try:
             timeout = range_periods[range_param]['expires']
         except KeyError:
-            return jsonify({'error': 'Invalid range specified.'
+            return jsonify({'error': 'Invalid range specified. '
                                      'Accepted: LAST_HOUR, LAST_DAY, LAST_WEEK, LAST_MONTH, LAST_YEAR, ALL_TIME'})
 
         @cache.memoize(timeout=timeout)
@@ -38,6 +37,7 @@ def index():
             try:
                 chart_data = r.get(url, timeout=30)
             except RequestException as e:
+                cache.delete_memoized(get_chart_data)
                 return jsonify({'error': str(e)})
 
             data = {'poloniex': chart_data.json()}
